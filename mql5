@@ -1,0 +1,77 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                            Oberon iMA            |
+//|                                Developer's site - forexroboteasy.com|
+//|                          Development by - Forex Robot Easy Team  |
+//+------------------------------------------------------------------+
+
+//--- input parameters
+input int BlockSize = 15;   // size of each block
+input int TimeFrame = PERIOD_M1;   // timeframe
+input ENUM_TESTING_MODE TestingMode = MODE_EVERYTICK;   // testing mode
+
+//--- global variables
+int MagicNumber = 999;   // magic number for identification
+int TotalBlocks;   // total number of blocks
+int CurrentBlock;   // current block
+int CurrentSymbol;   // current symbol
+bool IsTradingAllowed;   // flag for trading permission
+
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+   // calculate total number of blocks
+   TotalBlocks = MathCeil(SymbolInfoInteger(_Symbol, SYMBOL_TRADE_TICK_SIZE) / BlockSize);
+
+   // set initial block and symbol
+   CurrentBlock = 0;
+   CurrentSymbol = 0;
+
+   // check if trading is allowed
+   if (MagicNumber <= 15)
+      IsTradingAllowed = True;
+   else
+      IsTradingAllowed = False;
+
+   return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert tick function                                             |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+   // check if current block has been completed
+   if (CurrentBlock == BlockSize)
+   {
+      // reset current block and symbol
+      CurrentBlock = 0;
+      CurrentSymbol++;
+
+      // check if trading is allowed for new symbol
+      if (MagicNumber <= CurrentSymbol * 15)
+         IsTradingAllowed = True;
+      else
+         IsTradingAllowed = False;
+   }
+
+   // check if trading is allowed
+   if (!IsTradingAllowed)
+      return;
+
+   // perform trading operations
+   // ...
+
+   // increment current block
+   CurrentBlock++;
+}
+
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+   // perform necessary deinitialization tasks
+}
